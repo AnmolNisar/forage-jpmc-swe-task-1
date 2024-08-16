@@ -31,29 +31,41 @@ N = 500
 
 def getDataPoint(quote):
     """ Produce all the needed values to generate a datapoint """
-    """ ------------- Update this function ------------- """
     stock = quote['stock']
     bid_price = float(quote['top_bid']['price'])
     ask_price = float(quote['top_ask']['price'])
-    price = bid_price
+    price = (bid_price + ask_price) / 2
     return stock, bid_price, ask_price, price
 
-
 def getRatio(price_a, price_b):
-    """ Get ratio of price_a and price_b """
-    """ ------------- Update this function ------------- """
-    return 1
+    """Calculate the ratio of stock price_a to stock price_b"""
+    if price_b == 0:
+        return 0  # Handle division by zero
+    return price_a / price_b
 
+def main():
+    # Example quotes for demonstration purposes
+    quote_a = {'stock': 'ABC', 'top_bid': {'price': '115.46'}, 'top_ask': {'price': '116.63'}}
+    quote_b = {'stock': 'DEF', 'top_bid': {'price': '115.14'}, 'top_ask': {'price': '116.05'}}
 
-# Main
+    # Dictionary to store prices
+    prices = {}
+
+    # Fetch data points
+    stock_a, bid_a, ask_a, price_a = getDataPoint(quote_a)
+    stock_b, bid_b, ask_b, price_b = getDataPoint(quote_b)
+
+    # Store prices in the dictionary
+    prices[stock_a] = price_a
+    prices[stock_b] = price_b
+
+    # Calculate ratio using the prices from the dictionary
+    ratio = getRatio(prices[stock_a], prices[stock_b])
+    print(f"Quoted {stock_a} at (bid:{bid_a}, ask:{ask_a}, price:{price_a})")
+    print(f"Quoted {stock_b} at (bid:{bid_b}, ask:{ask_b}, price:{price_b})")
+    print(f"Ratio {ratio}")
+
 if __name__ == "__main__":
-    # Query the price once every N seconds.
-    for _ in iter(range(N)):
-        quotes = json.loads(urllib.request.urlopen(QUERY.format(random.random())).read())
+    main()
 
-        """ ----------- Update to get the ratio --------------- """
-        for quote in quotes:
-            stock, bid_price, ask_price, price = getDataPoint(quote)
-            print("Quoted %s at (bid:%s, ask:%s, price:%s)" % (stock, bid_price, ask_price, price))
 
-        print("Ratio %s" % getRatio(price, price))
